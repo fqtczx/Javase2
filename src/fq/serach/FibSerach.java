@@ -1,9 +1,11 @@
 package fq.serach;
 
+import java.util.Arrays;
+
 public class FibSerach {
     public static int maxsize=20;
     public static void main(String[] args) {
-        int[] arr={1,2,3,4,6,7,12,34,45,67,89,123,467,678,878};
+        int[] arr={1,2,3,4,6,7,12,34,45,67};
         System.out.println(fibser(arr,67));
     }
 
@@ -34,12 +36,12 @@ public class FibSerach {
             temp[i]=arr[arr.length-1];
         }
 
-        while(low<high){
+        while(low<=high){
             int mid=low+f[k-1]-1;
-            if(arr[mid]>val){
+            if(temp[mid]>val){
                 high=mid-1;
                 k--;
-            }else if(arr[mid]<val){
+            }else if(temp[mid]<val){
                 low=mid+1;
                 k-=2;
             }else{

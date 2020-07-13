@@ -33,6 +33,24 @@ public class BinaryTreeDemo {
         System.out.println(bt.infixFind(2).toString());
         System.out.println(bt.postFind(2).toString());
 
+        //测试一把，删除某个节点
+        bt.del(5);
+        System.out.println("删除5号节点之后的结果");
+        System.out.print("前序");
+        bt.preOrder();
+        System.out.print("中序");
+        bt.infixOrder();
+        System.out.print("后序");
+        bt.postOrder();
+
+        bt.del(3);
+        System.out.println("删除3号节点之后的结果");
+        System.out.print("前序");
+        bt.preOrder();
+        System.out.print("中序");
+        bt.infixOrder();
+        System.out.print("后序");
+        bt.postOrder();
     }
 }
 
@@ -93,6 +111,23 @@ class BinaryTree{
         }else{
             return null;
         }
+    }
+
+    //删除某个待定节点
+    public void del(int no){
+        if(root!=null){
+            //这里需要立即判断
+             if(this.root.getNo()==no){
+                 this.root=null;
+                 return;
+             }else{
+                 this.root.del(no);
+             }
+        }else{
+            System.out.println("树为空，不能删除");
+        }
+
+        this.root.del(no);
     }
 }
 
@@ -253,5 +288,26 @@ class HeroNode{
             return this;
         }
         return res;
+    }
+
+    //递归删除待定节点
+    public void del(int no){
+        if(this.left!=null && this.left.getNo()==no){
+            this.left=null;
+            return;
+        }
+
+        if(this.right!=null && this.right.getNo()==no){
+            this.right=null;
+            return;
+        }
+
+        if(this.left!=null){
+            this.left.del(no);
+        }
+
+        if(this.right!=null){
+            this.right.del(no);
+        }
     }
 }

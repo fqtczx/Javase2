@@ -1,5 +1,6 @@
 package fq.huffmantree.zip;
 
+import java.io.*;
 import java.util.*;
 
 public class HuffmanCode {
@@ -7,7 +8,7 @@ public class HuffmanCode {
     static StringBuilder sb=new StringBuilder();
 
     public static void main(String[] args) {
-        String str="i like like like java do you like a java";
+        String str="我喜欢你";
         byte[] bytes=str.getBytes();
         /*
         System.out.println(bytes.length);
@@ -24,6 +25,12 @@ public class HuffmanCode {
         */
         byte[] huffmanCodeBytes=huffmanZip(bytes);
         System.out.println(Arrays.toString(huffmanCodeBytes));
+        System.out.println(toBinString((byte)77,true));
+        String decode=decode(huffmanCodeBytes);
+        System.out.println(decode.length());
+
+        String restring=deString(decode,huffmanCodes);
+        System.out.println(restring);
     }
 
     //将上面的代码封装成一个方法
@@ -139,13 +146,114 @@ public class HuffmanCode {
             String strByte;
             if(i+8>sb.length()){
                 strByte=sb.substring(i);//最后几位是怎样进行补零的吗？
+                //其实这里最后几个不足8位时，应该强制将其补至8位，不让后面不好处理
+                //但是在前面补0的话，就会破坏原有的编码意思
+                //这就需要在后续的解码过程中将补到的0去掉
+                System.out.println(strByte);//打印出最后不足8位的二进制字符串
             }else{
                 strByte=sb.substring(i,i+8);
+                System.out.println(strByte);
             }
             huffmanCodeBytes[index]=(byte)Integer.parseInt(strByte,2);
             index++;
         }
         return huffmanCodeBytes;
+    }
+
+    //下面进行解压缩
+    //首先将得到的字节数组重新转成二进制字符串
+    public static String  toBinString(byte b,boolean flag){
+        int temp=b;
+        String str=Integer.toBinaryString(temp);
+        if(str.length()>8){
+            return str.substring(str.length()-8);
+        }else{
+            if(flag==true){//代表正数需要补位
+                int count=8-str.length();
+                for(int i=1;i<=count;i++){
+                    str="0"+str;
+                }
+                return str;
+            }else{//代表正数不需要补位
+                return str;
+            }
+
+        }
+    }
+
+    public static String decode(byte[] bytes){
+        StringBuilder sb=new StringBuilder();
+        for(int i=0;i<bytes.length;i++){
+            if(i==bytes.length-1){
+                sb.append(toBinString(bytes[i],false));//这里其实是有问题的
+            }else{
+                sb.append(toBinString(bytes[i],true));
+            }
+        }
+        return sb.toString();
+    }
+
+    //将得到的二进制字符串对应霍夫曼编码表还原成原来的字符串
+    public static String deString(String str,Map<Byte,String> huffmanCodes){
+        Map<String,Byte> map=new HashMap<>();
+        for(Map.Entry<Byte,String> entry:huffmanCodes.entrySet()){
+            map.put(entry.getValue(),entry.getKey());
+            //将编码表的map进行反转，以便进行查找
+        }
+        System.out.println(map);
+
+        //接下来进行遍历字符串，进行还原字符串
+        //这里使用双指针进行遍历
+        ArrayList<Byte> al=new ArrayList<Byte>();
+        for(int i=0,j=1;i<str.length() && j<str.length();){
+            String s=String.valueOf(str.charAt(i));
+            while(map.get(s)==null){
+                s=s+String.valueOf(str.charAt(j));
+                j++;
+            }
+
+            al.add(map.get(s));
+            i=j;
+            j++;
+        }
+
+        byte[] bys=new byte[al.size()];
+        int index=0;
+        for(Byte b:al){
+            bys[index]=b;
+            index++;
+        }
+
+        return new String(bys);
+    }
+
+    //编写一个方法，对文件进行压缩
+    public static void zipFile(String srcFile,String desFile) throws IOException {
+        FileInputStream fis= new FileInputStream(srcFile);
+        byte[] b=new byte[fis.available()];
+        fis.read(b);
+        byte[] huffmanBytes=huffmanZip(b);
+
+        FileOutputStream fos=new FileOutputStream(desFile);
+        ObjectOutputStream oos=new ObjectOutputStream(fos);
+        oos.writeObject(huffmanBytes);
+        oos.writeObject(huffmanCodes);
+
+        fis.close();
+        fos.close();
+        oos.close();
+    }
+
+    //编写一个方法，实现文件的解压
+    public static void deZip(String zipFile,String desFile) throws IOException, ClassNotFoundException {
+        FileInputStream fis=new FileInputStream(zipFile);
+        ObjectInputStream ois=new ObjectInputStream(fis);
+
+        byte[] huffmanBytes=(byte[])ois.readObject();
+        Map<Byte,String> map=(Map)ois.readObject();
+
+        String decode=decode(huffmanBytes);
+        //这个代码么有完成，前面的代码没有考虑方法返回值，导致不具有普适性
     }
 }
 

@@ -1,21 +1,28 @@
-package fq.binarysorttree;
+package fq.avltree;
 
-public class BinarySortTreeDemo {
+public class AvlTreeDemo {
     public static void main(String[] args) {
-        int[] arr={7,3,10,12,5,1,9,2};
-        BinarySortTree bst=new BinarySortTree();
+//        int[] arr={4,3,6,5,7,8};
+        int[] arr={10,12,8,9,7,6};
+        AvlTree at=new AvlTree();
         for(int i=0;i<arr.length;i++){
-            bst.add(new Node(arr[i]));
+            at.add(new Node(arr[i]));
         }
-        bst.infixOrder();
-        System.out.println("删除叶子节点");
-        bst.del(3);
-        bst.infixOrder();
+        at.infixOrder();
+        System.out.println("在没有旋转处理之前");
+        System.out.println("树的高度是："+at.getRoot().height());
+        System.out.println("左子树的高度是："+at.getRoot().leftHeight());
+        System.out.println("右子树树的高度是："+at.getRoot().rightHeight());
+        System.out.println("根节点是："+at.getRoot());//处理完之后，根节点的值就变为6了
     }
 }
 
-class BinarySortTree{
+class AvlTree{
     private Node root;
+
+    public Node getRoot() {
+        return root;
+    }
 
     public void add(Node n){
         if(root==null){
@@ -117,6 +124,13 @@ class Node{
         this.val = val;
     }
 
+    @Override
+    public String toString() {
+        return "Node{" +
+                "val=" + val +
+                '}';
+    }
+
     //添加节点的方法
     //使用递归的方法添加节点，需要满足二叉排序树的要求
     public void add(Node n){
@@ -137,6 +151,23 @@ class Node{
                 this.right.add(n);
             }
         }
+
+        //当添加完一个节点后，当右子树的高度-左子树的高度>1,就要进行左旋转
+        if(rightHeight()-leftHeight()>1){
+            if(right !=null && right.leftHeight()>right.rightHeight()){
+                right.rightrotate();
+            }
+            leftrotate();
+            return;//注意这里是必须要的
+        }
+
+        //当添加完一个节点后，当左子树的高度-右子树的高度>1,就要进行右旋转
+        if(leftHeight()-rightHeight()>1){
+            if(left !=null && left.rightHeight()>left.leftHeight()){
+                left.leftrotate();
+            }
+            rightrotate();
+        }
     }
 
     //中序遍历
@@ -152,11 +183,47 @@ class Node{
         }
     }
 
-    @Override
-    public String toString() {
-        return "Node{" +
-                "val=" + val +
-                '}';
+    //返回以该节点为根节点的树的高度
+    public int height(){
+        return Math.max(left==null? 0:left.height(),right==null? 0:right.height())+1;
+    }
+
+    //返回左子树的高度
+    public int leftHeight(){
+        if(left==null){
+            return 0;
+        }else{
+            return left.height();
+        }
+    }
+
+    //返回右子树的高度
+    public int rightHeight(){
+        if(right==null){
+            return 0;
+        }else{
+            return right.height();
+        }
+    }
+
+    //左旋转的方法
+    public void leftrotate(){
+        Node n=new Node(val);
+        n.left=left;
+        n.right=right.left;
+        val=right.val;
+        right=right.right;
+        left=n;
+    }
+
+    //右旋转的方法
+    public void rightrotate(){
+        Node n=new Node(val);
+        n.right=right;
+        n.left=left.right;
+        val=left.val;
+        left=left.left;
+        right=n;
     }
 
     /**

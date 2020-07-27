@@ -36,7 +36,7 @@ public class Kruskal {
         for(int i=0;i<vertexs.length;i++){
             for(int j=i+1;j<vertexs.length;j++){
                 if(matrix[i][j]!= INF  ){
-                    edgeNum++;
+                    edgeNum++;//统计有效边的条数
                 }
             }
         }
@@ -114,6 +114,7 @@ public class Kruskal {
         EData[] eds=getEdges();
 //        System.out.println(Arrays.toString(eds));
         sortEdges(eds);
+        System.out.println(Arrays.toString(eds));
 
         //遍历eds数组，将边添加到最小生成树中时，判断是否加入的边与最小生成树已有的边构成回路，如果没有，就将结果加入res中
         for(int i=0;i<eds.length;i++){

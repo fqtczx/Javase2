@@ -17,7 +17,7 @@ public class Dijkstra {
         };
         DGraph dg=new DGraph(vertex,matrix);
         dg.show();
-        dg.dijkstra(6);
+        dg.dijkstra(2);
     }
 
 
@@ -43,13 +43,16 @@ class DGraph{
     public void dijkstra(int index){
         vv=new VisitedVertex(vertex.length,index);
         update(index);
-//        System.out.println(Arrays.toString(vv.already_arr));
-//        System.out.println(Arrays.toString(vv.dis));
-//        System.out.println(Arrays.toString(vv.pre_visited));
+        System.out.println("第一轮循环之后的结果：");
+        System.out.println(Arrays.toString(vv.already_arr));
+        System.out.println(Arrays.toString(vv.dis));
+        System.out.println(Arrays.toString(vv.pre_visited));
         for(int j=1;j<vertex.length;j++){
-            index=vv.updateArr();
-            update(index);
+            int ind=vv.updateArr();
+            update(ind);
         }
+
+        System.out.println("处理完成之后的结果：");
 
         System.out.println(Arrays.toString(vv.already_arr));
         System.out.println(Arrays.toString(vv.dis));
@@ -61,7 +64,7 @@ class DGraph{
         int len=0;
         for(int i=0;i<matrix[index].length;i++){
             len=vv.getDis(index)+matrix[index][i];
-            if(!vv.in(i) &&len<vv.getDis(i)){
+            if(!vv.in(i) && len<vv.getDis(i)){
                 vv.updateDis(i,len);
                 vv.updatePre(i,index);
             }
@@ -99,6 +102,7 @@ class VisitedVertex{
     //更新出发顶点到index顶点的距离
     public void updateDis(int index,int len){
         dis[index]=len;
+
     }
 
     //更新index顶点的前驱节点下标为pre

@@ -1,0 +1,23 @@
+0: package fq.io;
+1: 
+2: import java.io.*;
+3: 
+4: public class BasicFileOutput {
+5:     static  String file="BasicFileOutput";
+6: 
+7:     public static void main(String[] args) throws IOException {
+8:         BufferedReader in=new BufferedReader(new StringReader(
+9:                 BufferedInputFile.read("D://IDEAPro//src//fq//io//BasicFileOutput.java")
+10:         ));
+11:         PrintWriter out=new PrintWriter(
+12:                 new BufferedWriter(new FileWriter(file))
+13:         );
+14:         int linecount=0;
+15:         String s;
+16:         while((s=in.readLine())!=null){
+17:             out.println(linecount++ +": "+s);
+18:         }
+19:         out.close();
+20:         System.out.println(BufferedInputFile.read(file));
+21:     }
+22: }
